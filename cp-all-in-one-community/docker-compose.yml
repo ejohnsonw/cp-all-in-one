@@ -13,7 +13,7 @@ services:
 
   broker:
     image: confluentinc/cp-kafka:5.5.1
-    hostname: broker
+    hostname: containers.traveful.co
     container_name: broker
     depends_on:
       - zookeeper
@@ -25,7 +25,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://containers.traveful.co:29092,PLAINTEXT_HOST://containers.traveful.co:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -56,7 +56,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: 'broker:29092'
+      CONNECT_BOOTSTRAP_SERVERS: 'containers.traveful.co:29092'
       CONNECT_REST_ADVERTISED_HOST_NAME: connect
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: compose-connect-group
@@ -87,7 +87,7 @@ services:
       - "8088:8088"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_BOOTSTRAP_SERVERS: "broker:29092"
+      KSQL_BOOTSTRAP_SERVERS: "containers.traveful.co:29092"
       KSQL_HOST_NAME: ksqldb-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
@@ -116,7 +116,7 @@ services:
       - schema-registry
       - connect
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
-                       cub kafka-ready -b broker:29092 1 40 && \
+                       cub kafka-ready -b containers.traveful.co:29092 1 40 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
                        cub sr-ready schema-registry 8081 40 && \
                        echo Waiting a few seconds for topic creation to finish... && \
@@ -124,7 +124,7 @@ services:
                        tail -f /dev/null'"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
-      STREAMS_BOOTSTRAP_SERVERS: broker:29092
+      STREAMS_BOOTSTRAP_SERVERS: containers.traveful.co:29092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
 
@@ -140,6 +140,6 @@ services:
     container_name: rest-proxy
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
-      KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'containers.traveful.co:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
